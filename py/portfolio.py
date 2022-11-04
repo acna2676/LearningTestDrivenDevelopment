@@ -14,23 +14,39 @@ class Portfolio:
 
     # def evaluate(self, currency):
     def evaluate(self, bank, currency):
-        total = 0.0
-        failures = []
-        for m in self.moneys:
-            try:
-                total += bank.convert(m, currency).amount
-        #     except KeyError as ke:
-        #         failures.append(ke)
-        # if len(failures) == 0:
+        # total = 0.0
+        # failures = []
+        # for m in self.moneys:
+        #     try:
+        #         total += bank.convert(m, currency).amount
+        # #     except KeyError as ke:
+        # #         failures.append(ke)
+        # # if len(failures) == 0:
+        # #     return Money(total, currency)
+        # # failureMessage = ",".join(f.args[0] for f in failures)
+        # # raise Exception("Missing exchange rate(s):[" + failureMessage + "]")
+        #     except Exception as ex:
+        #         failures.append(ex)
+        # if not failures:
         #     return Money(total, currency)
         # failureMessage = ",".join(f.args[0] for f in failures)
         # raise Exception("Missing exchange rate(s):[" + failureMessage + "]")
-            except Exception as ex:
-                failures.append(ex)
-        if len(failures) == 0:
-            return Money(total, currency)
-        failureMessage = ",".join(f.args[0] for f in failures)
-        raise Exception("Missing exchange rate(s):[" + failureMessage + "]")
+
+        total = Money(0, currency)
+        failures = ""
+        for m in self.moneys:
+            c, k = bank.convert(m, currency)
+            if k is None:
+                total += c
+            else:
+                failures += k if not failures else "," + k
+        if not failures:
+            return total
+
+        # total = functools.reduce(operator.add, map(lambda m: bank.convert(m, currency)[0], self.moneys), 0)
+        # failure = functools.reduce(operator.add, map(lambda m: bank.convert(m, currency)[1], self.moneys), 0)
+        # failures += k if not failures else "," + k
+        raise Exception("Missing exchange rate(s):[" + failures + "]")
 
     # def __convert(self, aMoney, aCurrency):
     #     exchangeRates = {'EUR->USD': 1.2, 'USD->KRW': 1100}

@@ -1,6 +1,12 @@
 from money import Money
 
 
+class MoneyAndIsValidRate:
+    def __init__(self, money, rate):
+        self.money = money
+        self.rate = rate
+
+
 class Bank:
     def __init__(self):
         self.exchangeRates = {}
@@ -11,8 +17,9 @@ class Bank:
 
     def convert(self, aMoney, aCurrency):
         if aMoney.currency == aCurrency:
-            return Money(aMoney.amount, aCurrency)
+            return Money(aMoney.amount, aCurrency), None
         key = aMoney.currency + "->" + aCurrency
         if key in self.exchangeRates:
-            return Money(aMoney.amount * self.exchangeRates[key], aCurrency)
-        raise Exception(key)
+            return Money(aMoney.amount * self.exchangeRates[key], aCurrency), None
+        return None, key
+        # raise Exception(key)
